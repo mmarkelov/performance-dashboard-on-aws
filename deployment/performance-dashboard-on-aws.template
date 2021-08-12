@@ -6,12 +6,6 @@
       "Type": "String",
       "Description": "Email address for the admin user",
       "MinLength": 5
-    },
-    "BucketNamePrefix": {
-      "Type": "String",
-      "Description": "Prefix for the name of the S3 buckets used to store datasets and web assets",
-      "Default": "release",
-      "AllowedPattern": "^[a-z0-9]+$"
     }
   },
   "Resources": {
@@ -21,8 +15,7 @@
         "TemplateURL": {"Fn::Sub" : "https://%%BUCKET_NAME%%-${AWS::Region}.s3.amazonaws.com/%%SOLUTION_NAME%%/%%VERSION%%/Auth.template"},
         "TimeoutInMinutes": "60",
         "Parameters": {
-          "adminEmail": {"Ref" : "AdminEmail"},
-          "bucketNamePrefix": {"Ref" : "BucketNamePrefix"}
+          "adminEmail": {"Ref" : "AdminEmail"}
         }
       }
     },
@@ -31,10 +24,7 @@
       "DependsOn": "authStack",
       "Properties": {
         "TemplateURL": {"Fn::Sub" : "https://%%BUCKET_NAME%%-${AWS::Region}.s3.amazonaws.com/%%SOLUTION_NAME%%/%%VERSION%%/Backend.template"},
-        "TimeoutInMinutes": "60",
-        "Parameters": {
-          "bucketNamePrefix": {"Ref" : "BucketNamePrefix"}
-        }
+        "TimeoutInMinutes": "60"
       }
     },
     "lambdaEdgeStack": {
