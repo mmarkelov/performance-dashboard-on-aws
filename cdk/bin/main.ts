@@ -37,6 +37,7 @@ const backend = new BackendStack(app, "Backend", {
   },
   datasetsBucketName: datasetsBucketName,
   contentBucketName: contentBucketName,
+  authRegion: region
 });
 
 const frontend = new FrontendStack(app, "Frontend", {
@@ -47,6 +48,7 @@ const frontend = new FrontendStack(app, "Frontend", {
   identityPoolId: auth.identityPoolId,
   appClientId: auth.appClientId,
   backendApiUrl: backend.restApi.url,
+  authRegion: region
 });
 
 const operations = new OpsStack(app, "Ops", {
