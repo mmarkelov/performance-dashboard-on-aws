@@ -3,7 +3,7 @@ import "source-map-support/register";
 import * as cdk from "@aws-cdk/core";
 import { FrontendStack } from "../lib/frontend-stack";
 import { BackendStack } from "../lib/backend-stack";
-import { AuthStack } from "../lib/auth-stack";
+import { AuthParamsStack } from "../lib/authparams-stack";
 import { OpsStack } from "../lib/ops-stack";
 import { Aspects, Tags } from "@aws-cdk/core";
 import { FunctionInvalidWarningSuppressor } from "../lib/constructs/function-aspect";
@@ -23,8 +23,8 @@ const region = cdk.Aws.REGION;
 const datasetsBucketName = `performancedash-${envName.toLowerCase()}-${accountId}-${region}-datasets`;
 const contentBucketName = `performancedash-${envName.toLowerCase()}-${accountId}-${region}-content`;
 
-const auth = new AuthStack(app, "Auth", {
-  stackName: stackPrefix.concat("-Auth"),
+const auth = new AuthParamsStack(app, "AuthParams", {
+  stackName: stackPrefix.concat("-AuthParams"),
   datasetsBucketName: datasetsBucketName,
   contentBucketName: contentBucketName,
 });
@@ -37,18 +37,18 @@ const backend = new BackendStack(app, "Backend", {
   },
   datasetsBucketName: datasetsBucketName,
   contentBucketName: contentBucketName,
-  authRegion: region,
+  authRegion: auth.authRegion,
 });
 
 const frontend = new FrontendStack(app, "Frontend", {
   stackName: stackPrefix.concat("-Frontend"),
+  authRegion: auth.authRegion,
   datasetsBucket: datasetsBucketName,
   contentBucket: contentBucketName,
   userPoolId: auth.userPoolId,
   identityPoolId: auth.identityPoolId,
   appClientId: auth.appClientId,
   backendApiUrl: backend.restApi.url,
-  authRegion: region,
 });
 
 const operations = new OpsStack(app, "Ops", {
